@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+    <ul>
+        <li><a href="{% url "change_username" %}">Change username</a></li>
+        <li><a href="/password_change/">Change password</a></li>
+        <li><a href="{% url "change_email" %}">Change email</a></li>
+        <li><a href="{% url "delete_account" %}">Delete account</a></li>
+    </ul>
+{% endblock %}

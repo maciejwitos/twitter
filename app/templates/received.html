@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Odebrane</h1>
+    <h3><a href="/received/">Odebrane  |</a><a href="/sent/">   Wysłane</a></h3>
+    <div style="border-style: dot-dash; border-width: 4px; color: #4f4f4f">
+        {% for message in received %}
+            <p style="border: #4f4f4f">Nadawca:{{ message.sender }}, Odbiorca: {{ message.receiver }}</p>
+            <p>{{ message.text }}</p>
+            <hr>
+        {% endfor %}
+    </div>
+{% endblock %}

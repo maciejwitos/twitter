@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+    <table border="1">
+        <tr>
+            <td>UserName</td>
+            <td>{{ user.username }}</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>Email</td>
+            <td>{{ user.email }}</td>
+            <td><a href="/change_email/">Change email</a></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td>{{ user.password }}</td>
+            <td><a href="/change_password/">Change password</a></td>
+        </tr>
+        <tr>
+            <td>Tweets</td>
+            <td>{{ user.tweet_set.all.count }}</td>
+            <td><a href="/tweet/new/">Creat New Tweet</a></td>
+        </tr>
+    </table>
+{% endblock %}
