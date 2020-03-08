@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
 from django.shortcuts import render, redirect
 from django.views import View
-from app.forms import RegisterUserForm, AddCommentForm, SendMessageForm
+from app.forms import RegisterUserForm, AddCommentForm, SendMessageForm, NewTweetForm
 from app.models import *
 from django.http import HttpResponse
 
@@ -13,18 +13,41 @@ class Dashboard(LoginRequiredMixin, View):
 
     def get(self, request):
         tweets = Tweet.objects.all()
-        add_comment = AddCommentForm()
+        print(request.POST.get('tweet_name'))
+        add_comment = AddCommentForm(request.POST, initial={'user': request.user,
+                                                            'tweet': request.GET.get('tweet_name')})
         return render(request, 'dashboard.html', {'tweets': tweets,
                                                   'add_comment': add_comment})
 
     def post(self, request):
-        add_comment = AddCommentForm(request.POST)
+        add_comment = AddCommentForm(request.POST, initial={'user': request.user,
+                                                            'tweet': request.POST.get('tweet_name')})
+        print(request.POST.get('tweet_name'))
         if add_comment.is_valid():
-            Comment.objects.create(message=add_comment.cleaned_data['message'],
-                                   tweet=add_comment.cleaned_data['tweet.name'],
-                                   user=request.user)
+            add_comment.save()
             return redirect('/dashboard/')
         return redirect('/dashboard')
+
+
+class UserView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    def get(self, request, id):
+        tweets = Tweet.objects.filter(user=id)
+        return render(request, 'user.html', {
+            'tweets': tweets})
+
+
+class AddCommentView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    def get(self, request):
+        form = AddCommentForm(request.GET, initial={'tweet': request.GET.get('tweet_name'),
+                                                     'message': request.GET.get('message'),
+                                                     'user': request.GET.get('user')})
+        if form.is_valid():
+            form.save()
+        return redirect(f'/user/{request.user.pk}/')
 
 
 class RegisterView(View):
@@ -45,26 +68,6 @@ class RegisterView(View):
             login(request, user)
             return redirect('/dashboard/')
         return redirect('/register_user/')
-
-
-class UserView(LoginRequiredMixin, View):
-    login_url = '/login/'
-
-    def get(self, request, id):
-        tweets = Tweet.objects.filter(user=id)
-        add_comment = AddCommentForm()
-        return render(request, 'user.html', {'tweets': tweets,
-                                             'add_comment': add_comment})
-
-    def post(self, request, id):
-
-        add_comment = AddCommentForm(request.POST)
-        if add_comment.is_valid():
-            Comment.objects.create(message=add_comment.cleaned_data['message'],
-                                   tweet=add_comment.cleaned_data['tweet.name'],
-                                   user=request.user)
-            return redirect(f'/user/{id}')
-        return redirect(f'/user/{id}')
 
 
 class DeleteUserConfirm(LoginRequiredMixin, View):
@@ -90,7 +93,7 @@ class UserDetails(LoginRequiredMixin, View):
         return render(request, 'user_details.html')
 
 
-class Received(LoginRequiredMixin,View):
+class Received(LoginRequiredMixin, View):
     login_url = '/login/'
 
     def get(self, request):
@@ -106,21 +109,18 @@ class Sent(LoginRequiredMixin, View):
         return render(request, 'sent.html', {'sent': sent})
 
 
-
 class SendMessage(LoginRequiredMixin, View):
     login_url = '/login/'
 
     def get(self, request):
-        form = SendMessageForm()
+        form = SendMessageForm(initial={'sender': request.user})
         return render(request, 'new_message.html', {'form': form})
 
     def post(self, request):
-        form = SendMessageForm(request.POST)
+        form = SendMessageForm(request.POST, initial={'sender': request.user})
         if form.is_valid():
-            Message.objects.create(text=form.cleaned_data['text'],
-                                   sender=request.user,
-                                   receiver=form.cleaned_data['receiver'])
-            return redirect('/messages/')
+            form.save()
+            return redirect('/received/')
         return redirect('/dashboard/')
 
 
@@ -129,3 +129,25 @@ class Settings(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, 'settings.html')
+
+
+class NewTweet(View):
+
+    def get(self, request):
+        form = NewTweetForm(initial={'user': request.user})
+        return render(request, 'new_tweet.html', {'form': form})
+
+    def post(self, request):
+        form = NewTweetForm(request.POST, initial={'user': request.user})
+        if form.is_valid():
+            form.save()
+            return redirect(f'/user/{request.user.pk}')
+        return redirect(f'/new_tweet/')
+
+
+class DeleteTweet(View):
+
+    def get(self, request, id):
+        tweet = Tweet.objects.get(id=id)
+        tweet.delete()
+        return redirect(f'/user/{request.user.pk}')

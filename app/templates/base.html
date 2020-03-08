@@ -80,11 +80,11 @@
 
         <p>
             {% if user.is_authenticated %}
-            {{ user }}<br>
-            <a href="/logout">Logout</a>
+                {{ user }}<br>
+                <a href="/logout">Logout</a>
             {% else %}
                 Please
-            <a href="/logout">Log in</a>
+                <a href="/logout">Log in</a>
             {% endif %}
         </p>
 
@@ -101,7 +101,11 @@
 
             <div class="form-group">
                 <button id="menuToggler" class="btn btn-primary">Menu</button>
+            {% if user.is_authenticated %}
+                    <button class="btn btn-primary"><a href="/new_tweet/" style="color: snow">Creat New Tweet</a></button>
+            {% endif %}
             </div>
+
             <section>
                 {% block content %}
 

@@ -34,11 +34,14 @@ urlpatterns = [
     path('user/details/', UserDetails.as_view()),
     path('received/', Received.as_view()),
     path('sent/', Sent.as_view()),
-    path('add_message/', SendMessage.as_view()),
+    path('send_message/', SendMessage.as_view()),
     path('delete_confirm/', DeleteUserConfirm.as_view(), name='delete_account'),
     path('delete_account/', DeleteUser.as_view()),
     path('settings/', Settings.as_view(), name='settings'),
-    path('change_username', Dashboard.as_view(), name='change_username'),
-    path('change_email', Dashboard.as_view(), name='change_email'),
+    path('change_username/', Dashboard.as_view(), name='change_username'),
+    path('change_email/', Dashboard.as_view(), name='change_email'),
+    path('new_tweet/', NewTweet.as_view()),
+    path('delete_tweet/<int:id>/', DeleteTweet.as_view()),
+    path('add_comment/', AddCommentView.as_view(), name='add-comment')
 
 ]

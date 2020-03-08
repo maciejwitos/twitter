@@ -23,13 +23,24 @@ class ChangePasswordForm(PasswordChangeForm):
         model = User
 
 
-class AddCommentForm(forms.Form):
-    message = forms.CharField(max_length=140)
-    user = forms.HiddenInput()
-    tweet = forms.HiddenInput()
+class AddCommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['user', 'tweet', 'message']
+        widgets = {'user': forms.HiddenInput(),
+                   'tweet': forms.HiddenInput()}
 
 
-class SendMessageForm(forms.Form):
-    text = forms.CharField(widget=forms.Textarea)
-    sender = forms.HiddenInput()
-    receiver = forms.ChoiceField(choices=User.objects.all())
+class SendMessageForm(ModelForm):
+    class Meta:
+        model = Message
+        fields = ['sender', 'receiver', 'text']
+        widgets = {'text': forms.Textarea(attrs={'cols': 80, 'rows': 7}),
+                   'sender': forms.HiddenInput()}
+
+
+class NewTweetForm(ModelForm):
+    class Meta:
+        model = Tweet
+        fields = ['message', 'user']
+        widgets = {'user': forms.HiddenInput()}

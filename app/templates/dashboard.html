@@ -1,26 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
     <section>
-    {% for tweet in tweets %}
-        <hr>
-        <hr>
-        <div>
-        <p>@{{ tweet.user }}
-        <p>{{ tweet.message }}<p>
-        </p>
-        <p><hr></p>
-        Komentarze
-        {% for coment in tweet.comment_set.all %}
-        <p>@{{ coment.user }}</p>
-        <p>{{ coment.message }}</p>
+        {% for tweet in tweets %}
+            <hr>
+            <hr>
+            <div>
+                <p>@{{ tweet.user }}
+                <p>{{ tweet.message }}<p>
+            </p>
+                <hr>
+                Komentarze
+                {% for coment in tweet.comment_set.all %}
+                    <p>@{{ coment.user }}</p>
+                    <p>{{ coment.message }}</p>
+                {% endfor %}
+                <input type="hidden" value="{{ tweet }}" name="tweet_name">
+                <form action="" method="get">
+                    {% csrf_token %}
+                    {{ add_comment }}
+                    <input type="hidden" value="{{ tweet }}" name="tweet_name">
+                    <input type="submit" value="Comment">
+                </form>
+            </div>
         {% endfor %}
-        <form action="" method="post">
-            {% csrf_token %}
-            {{ add_comment }}
-            <input type="hidden" value="{{ tweet.id }}" name="tweet_name">
-            <input type="submit" value="Skomentuj">
-        </form>
-        </div>
-    {% endfor %}
     </section>
 {% endblock %}
