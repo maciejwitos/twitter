@@ -1,12 +1,17 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ModelForm
 from django.shortcuts import render, redirect
 from django.views import View
-from app.forms import RegisterUserForm, AddCommentForm, SendMessageForm, NewTweetForm
+from app.forms import RegisterUserForm, SendMessageForm, NewTweetForm
 from app.models import *
-from django.http import HttpResponse
 
+
+
+''' ################# MAINS VIEW ######################'''
+
+'''
+Dashboard with all tweets from database
+'''
 
 class Dashboard(LoginRequiredMixin, View):
     login_url = '/login/'
@@ -16,12 +21,21 @@ class Dashboard(LoginRequiredMixin, View):
         return render(request, 'dashboard.html', {'tweets': tweets})
 
 
+'''View with all yours tweets'''
+
+
 class UserView(LoginRequiredMixin, View):
     login_url = '/login/'
 
     def get(self, request, id):
         tweets = Tweet.objects.filter(user=id)
         return render(request, 'user.html', {'tweets': tweets})
+
+
+''' ################# COMMENTS ######################'''
+
+
+'''Adding comments view, you can add'''
 
 
 class AddCommentView(LoginRequiredMixin, View):
@@ -39,6 +53,11 @@ class AddCommentView(LoginRequiredMixin, View):
                                    user=user)
         return redirect(next)
 
+
+''' ################# USERS ######################'''
+
+
+'''Register user view'''
 
 class RegisterView(View):
 
@@ -60,11 +79,17 @@ class RegisterView(View):
         return redirect('/register_user/')
 
 
+'''Deletion user confirmation view'''
+
+
 class DeleteUserConfirm(LoginRequiredMixin, View):
     login_url = '/login/'
 
     def get(self, request):
         return render(request, 'delete_user.html')
+
+
+'''Deletion user view'''
 
 
 class DeleteUser(LoginRequiredMixin, View):
@@ -76,11 +101,30 @@ class DeleteUser(LoginRequiredMixin, View):
         return redirect('/login/')
 
 
+'''User details view'''
+
+
 class UserDetails(LoginRequiredMixin, View):
     login_url = '/login/'
 
     def get(self, request):
         return render(request, 'user_details.html')
+
+
+''' User settings view'''
+
+
+class Settings(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    def get(self, request):
+        return render(request, 'settings.html')
+
+
+''' ################# MESSAGES ######################'''
+
+
+'''Received emails'''
 
 
 class Received(LoginRequiredMixin, View):
@@ -91,12 +135,18 @@ class Received(LoginRequiredMixin, View):
         return render(request, 'received.html', {'received': received})
 
 
+'''Sent emails'''
+
+
 class Sent(LoginRequiredMixin, View):
     login_url = '/login/'
 
     def get(self, request):
         sent = Message.objects.filter(sender=request.user.pk)
         return render(request, 'sent.html', {'sent': sent})
+
+
+'''New message form'''
 
 
 class SendMessage(LoginRequiredMixin, View):
@@ -114,11 +164,9 @@ class SendMessage(LoginRequiredMixin, View):
         return redirect('/dashboard/')
 
 
-class Settings(LoginRequiredMixin, View):
-    login_url = '/login/'
+''' ################# TWEET ######################'''
 
-    def get(self, request):
-        return render(request, 'settings.html')
+'''Create new Tweet form'''
 
 
 class NewTweet(View):
@@ -133,6 +181,9 @@ class NewTweet(View):
             form.save()
             return redirect(f'/user/{request.user.pk}')
         return redirect(f'/new_tweet/')
+
+
+'''Delete tweet form'''
 
 
 class DeleteTweet(View):
