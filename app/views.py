@@ -13,20 +13,7 @@ class Dashboard(LoginRequiredMixin, View):
 
     def get(self, request):
         tweets = Tweet.objects.all()
-        print(request.POST.get('tweet_name'))
-        add_comment = AddCommentForm(request.POST, initial={'user': request.user,
-                                                            'tweet': request.GET.get('tweet_name')})
-        return render(request, 'dashboard.html', {'tweets': tweets,
-                                                  'add_comment': add_comment})
-
-    def post(self, request):
-        add_comment = AddCommentForm(request.POST, initial={'user': request.user,
-                                                            'tweet': request.POST.get('tweet_name')})
-        print(request.POST.get('tweet_name'))
-        if add_comment.is_valid():
-            add_comment.save()
-            return redirect('/dashboard/')
-        return redirect('/dashboard')
+        return render(request, 'dashboard.html', {'tweets': tweets})
 
 
 class UserView(LoginRequiredMixin, View):
@@ -34,20 +21,23 @@ class UserView(LoginRequiredMixin, View):
 
     def get(self, request, id):
         tweets = Tweet.objects.filter(user=id)
-        return render(request, 'user.html', {
-            'tweets': tweets})
+        return render(request, 'user.html', {'tweets': tweets})
 
 
 class AddCommentView(LoginRequiredMixin, View):
     login_url = '/login/'
 
-    def get(self, request):
-        form = AddCommentForm(request.GET, initial={'tweet': request.GET.get('tweet_name'),
-                                                     'message': request.GET.get('message'),
-                                                     'user': request.GET.get('user')})
-        if form.is_valid():
-            form.save()
-        return redirect(f'/user/{request.user.pk}/')
+    def post(self, request):
+        user = User.objects.get(id=request.POST.get('user'))
+        tweet = Tweet.objects.get(id=request.POST.get('tweet'))
+        message = request.POST.get('message')
+        next = request.POST.get('next')
+
+        if user and tweet and message:
+            Comment.objects.create(tweet=tweet,
+                                   message=message,
+                                   user=user)
+        return redirect(next)
 
 
 class RegisterView(View):

@@ -14,11 +14,12 @@
                     <p>@{{ coment.user }}</p>
                     <p>{{ coment.message }}</p>
                 {% endfor %}
-                <input type="hidden" value="{{ tweet }}" name="tweet_name">
-                <form action="" method="get">
+              <form action="/add_comment/" method="post">
                     {% csrf_token %}
-                    {{ add_comment }}
-                    <input type="hidden" value="{{ tweet }}" name="tweet_name">
+                    <input type="text" name="message">
+                    <input type="hidden" value="{{ user.id }}" name="user">
+                    <input type="hidden" value="{{ tweet.id }}" name="tweet">
+                    <input type="hidden" value="{{ request.path }}" name="next">
                     <input type="submit" value="Comment">
                 </form>
             </div>
