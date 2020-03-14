@@ -1,6 +1,6 @@
 # Twitter
 
-App which allow you to post your 'tweets', comment them and have conversation between users. One of weekly workshops.
+App which allows you to post your 'tweets', comment them and have conversation between users. One of weekly workshops.
 
 ## Technology
 
